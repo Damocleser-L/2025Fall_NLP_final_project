@@ -205,3 +205,16 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Ignore all comment data and processed data files
+data/raw/*
+data/processed/*
+
+# Ignore model files
+models/**/*.model
+models/**/*.pth
+models/**/*.h5
+
+# Ignore environment files
+venv/
+.env
