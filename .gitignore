@@ -210,10 +210,9 @@ __marimo__/
 data/raw/*
 data/processed/*
 
+
 # Ignore model files
-models/**/*.model
-models/**/*.pth
-models/**/*.h5
+models/*
 
 # Ignore environment files
 venv/
