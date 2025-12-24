@@ -207,9 +207,7 @@ marimo/_lsp/
 __marimo__/
 
 # Ignore all comment data and processed data files
-data/raw/*
-data/processed/*
-
+data/*
 
 # Ignore model files
 models/*
