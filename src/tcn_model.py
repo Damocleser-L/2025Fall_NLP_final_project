@@ -217,17 +217,17 @@ def collate_batch(batch):
 def train(
 	slot_dir: str,
 	output_dir: str,
-	window_size: int = 24,
+	window_size: int = 12,
 	channels: Sequence[int] = (128, 128, 128),
 	kernel_size: int = 3,
-	dilations: Sequence[int] = (1, 4, 16),
+	dilations: Sequence[int] = (1, 2, 4),
 	dropout: float = 0.1,
 	batch_size: int = 64,
-	epochs: int = 50,
+	epochs: int = 20,
 	lr: float = 1e-3,
 	val_ratio: float = 0.1,
 	use_cosine: bool = False,
-	cosine_alpha: float = 0.5,
+	cosine_alpha: float = 0.3,
 	device: str = None,
 ) -> None:
 	set_seed(42)

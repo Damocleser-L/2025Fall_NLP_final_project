@@ -10,10 +10,10 @@ def train_fasttext_model(data_path='../data/processed/', model_path='../models/e
                          model_name='twitch_embeddings.model', 
                          vector_size=128, window=5, min_count=5, epochs=10):
     """
-    训练 FastText 词嵌入模型（使用 Gensim）
+    训练 FastText 词嵌入模型(使用 Gensim)
 
     参数:
-    - data_path: 训练数据路径（TXT 文件目录）
+    - data_path: 训练数据路径(TXT 文件目录)
     - model_path: 模型保存路径
     - model_name: 模型文件名
     - vector_size: 向量维度

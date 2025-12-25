@@ -4,7 +4,6 @@ import emoji
 import os
 import logging
 
-# 配置日志，方便调试
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
 class TwitchPreprocessor:
@@ -29,10 +28,7 @@ class TwitchPreprocessor:
         # 1. 尝试使用 demojize 转换已知 Emoji
         text = emoji.demojize(text, delimiters=(" EMOJI_", " "))
 
-        # 2. 检查是否还有残留的非 ASCII 字符（如 😭）
-        # 如果你决定不保留中文，可以直接用之前的 encode/decode 删掉
-        # 如果要保留中文但处理掉残留 Emoji，可以使用以下正则：
-        # 这个正则匹配所有非 ASCII 且非中文（\u4e00-\u9fa5）的字符
+        # 2. 检查是否还有残留的非 ASCII 字符
         remaining_emoji_pattern = re.compile(r'[^\x00-\x7f\u4e00-\u9fa5]+')
         
         # 选项 A：将残留的特殊表情替换为统一占位符 [UNK_EMOJI]
@@ -42,12 +38,10 @@ class TwitchPreprocessor:
         text = self.url_pattern.sub('', text)
         text = self.cmd_pattern.sub('', text)
 
-        # 4. 缩减重复字符 (Hiiii -> Hii, 哈哈哈 -> 哈哈)
-        # 针对 FastText，保留 2 个重复足以表达“程度”，同时减少特征爆炸
+        # 4. 缩减重复字符
         text = self.repeat_pattern.sub(r'\1\1', text)
 
         # 5. 删除标点符号，但保留字母、数字、中文和空格
-        # 使用 flags=re.UNICODE 确保在不同环境下都能正确保留中文字符
         text = re.sub(r'[^\w\s]', ' ', text, flags=re.UNICODE)
 
         # 6. 清理多余空格并统一小写（中文不受 lower 影响）
@@ -60,7 +54,6 @@ class TwitchPreprocessor:
             logging.error(f"输入路径不存在: {self.data_path}")
             return
 
-        # 确保输出目录存在
         if not os.path.exists(self.output_path):
             os.makedirs(self.output_path)
             logging.info(f"创建输出目录: {self.output_path}")
@@ -132,9 +125,7 @@ class TwitchPreprocessor:
             except Exception as e:
                 logging.error(f"处理文件 {file} 时出错: {e}")
 
-# --- 执行示例 ---
 if __name__ == "__main__":
     # 将需要处理的文件放入 data/waiting/ 目录，程序会自动处理并删除该目录中的文件
-    # data/raw/ 中的原始数据会被保留
     processor = TwitchPreprocessor(skip_txt_output=True)  # 仅输出带时间戳的 CSV
     processor.run()
