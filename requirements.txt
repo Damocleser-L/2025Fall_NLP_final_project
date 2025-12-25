@@ -2,3 +2,8 @@ pandas
 emoji
 gensim
 scikit-learn
+torch
+transformers
+sentence-transformers
+numpy
+matplotlib

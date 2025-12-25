@@ -12,7 +12,9 @@ Extracting video narratives from time-sync comments using TCN and domain-customi
 - **词嵌入训练**：使用 Gensim 的 FastText 训练定制词嵌入，适用于直播聊天领域。
 - **IDF 拟合**：基于语料库计算词的逆文档频率，用于加权嵌入。
 - **槽特征构建**：将弹幕聚合为 5 秒时间槽，计算 IDF 加权平均向量（L2 归一化）和密度特征（log(1+x) + Min-Max 缩放）。
-- **下游任务**：使用 TCN 模型进行时间序列分析，如情感分类或叙事生成。
+- **TCN 预训练**：使用 TCN 模型进行时间序列建模，预测下一槽特征，实现无监督预训练。
+- **Fine-tuning**：使用 Transformer 编码器对 TCN 进行微调，支持颜色分类和可选的总结对齐任务。
+- **推理和可视化**：加载微调模型，进行预测并生成注意力权重可视化图，用于突出叙事关键时刻。
 - **自动化流程**：支持批量处理、模型训练和特征验证。
 
 ## 安装和依赖
@@ -40,7 +42,10 @@ Extracting video narratives from time-sync comments using TCN and domain-customi
    - gensim: 词嵌入训练（包含 FastText 实现）
    - scikit-learn: IDF 拟合和相似度计算
    - numpy: 数值计算
-   - torch: TCN 模型（可选，需额外安装：`pip install torch`）
+   - torch: TCN 和 Transformer 模型
+   - transformers: Transformer 实现
+   - sentence-transformers: 总结编码（SBERT）
+   - matplotlib: 可视化
 
 ## 使用说明
 
@@ -88,10 +93,26 @@ python check_slots.py
 ```bash
 python tcn_model.py
 ```
-- 使用槽特征训练 TCN 模型进行下游任务。
+- 使用槽特征训练 TCN 模型进行下一槽预测预训练。
 - 输出：`models/tcn/` 中的模型文件。
 
-### 8. 其他脚本
+### 8. Fine-tuning 模型
+```bash
+python finetune.py --csv_path ../data/Couriway-20251112-2615595363.csv --use_summary --summary_weight 2.0
+```
+- 使用预训练的 TCN 和 Transformer 对模型进行微调，支持颜色分类和可选的总结对齐。
+- 参数：`--csv_path` 指定运行数据 CSV，`--use_summary` 启用总结损失，`--summary_weight` 设置总结损失权重。
+- 输出：`models/tcn/` 中的微调模型文件。
+
+### 9. 推理和可视化
+```bash
+python inference.py --video_id Couriway-20251112-2615595363 --start_time 0 --end_time 3600
+```
+- 加载微调模型，对指定时间段进行预测并生成注意力权重可视化。
+- 参数：`--video_id` 指定视频 ID，`--start_time` 和 `--end_time` 设置时间范围（秒）。
+- 输出：预测结果和注意力图。
+
+### 10. 其他脚本
 - `download_chat.py`：下载 Twitch 聊天数据。
 - `summarize.py`：生成聊天总结。
 
@@ -119,7 +140,9 @@ python tcn_model.py
     ├── fit_idf.py        # IDF 拟合
     ├── build_slots.py    # 槽特征构建
     ├── check_slots.py    # 特征验证
-    ├── tcn_model.py      # TCN 模型训练
+    ├── tcn_model.py      # TCN 模型预训练
+    ├── finetune.py       # 模型微调
+    ├── inference.py      # 推理和可视化
     ├── download_chat.py  # 数据下载
     └── summarize.py      # 总结生成
 ```
